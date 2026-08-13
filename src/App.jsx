@@ -10,6 +10,10 @@ function App() {
     setInputValue("")
   }
 
+  const handleDelete = (indexToRemove) => {
+    setTodos(todos.filter((todo, index) => index !== indexToRemove))
+  }
+
   return (
     <div>
       <h1>My To-Do List</h1>
@@ -21,7 +25,10 @@ function App() {
       <button onClick={handleAdd}>Add</button>
       <ul>
         {todos.map((todo, index) => (
-          <li key={index}>{todo}</li>
+          <li key={index}>
+            {todo}
+            <button onClick={() => handleDelete(index)}>Delete</button>
+          </li>
         ))}
       </ul>
     </div>
