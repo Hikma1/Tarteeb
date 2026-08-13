@@ -1,7 +1,11 @@
 import { useState } from 'react'
 
 function App() {
-  const [todos, setTodos] = useState(["Learn React", "Build a to-do app", "Practice more"])
+  const [todos, setTodos] = useState([
+    { text: "Learn React", done: false },
+    { text: "Build a to-do app", done: false },
+    { text: "Practice more", done: false }
+  ])
   const [inputValue, setInputValue] = useState("")
   const [editIndex, setEditIndex] = useState(null)
 
@@ -10,11 +14,11 @@ function App() {
 
     if (editIndex !== null) {
       const updatedTodos = [...todos]
-      updatedTodos[editIndex] = inputValue
+      updatedTodos[editIndex] = { ...updatedTodos[editIndex], text: inputValue }
       setTodos(updatedTodos)
       setEditIndex(null)
     } else {
-      setTodos([...todos, inputValue])
+      setTodos([...todos, { text: inputValue, done: false }])
     }
     setInputValue("")
   }
@@ -24,8 +28,14 @@ function App() {
   }
 
   const handleEdit = (index) => {
-    setInputValue(todos[index])
+    setInputValue(todos[index].text)
     setEditIndex(index)
+  }
+
+  const handleToggleDone = (index) => {
+    const updatedTodos = [...todos]
+    updatedTodos[index] = { ...updatedTodos[index], done: !updatedTodos[index].done }
+    setTodos(updatedTodos)
   }
 
   return (
@@ -40,7 +50,14 @@ function App() {
       <ul>
         {todos.map((todo, index) => (
           <li key={index}>
-            {todo}
+            <input
+              type="checkbox"
+              checked={todo.done}
+              onChange={() => handleToggleDone(index)}
+            />
+            <span style={{ textDecoration: todo.done ? "line-through" : "none" }}>
+              {todo.text}
+            </span>
             <button onClick={() => handleEdit(index)}>Edit</button>
             <button onClick={() => handleDelete(index)}>Delete</button>
           </li>
