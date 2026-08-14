@@ -1,14 +1,21 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 
 function App() {
-  const [todos, setTodos] = useState([
-    { text: "Learn React", done: false },
-    { text: "Build a to-do app", done: false },
-    { text: "Practice more", done: false }
-  ])
+  const [todos, setTodos] = useState(() => {
+    const saved = localStorage.getItem("todos")
+    return saved ? JSON.parse(saved) : [
+      { text: "Learn React", done: false },
+      { text: "Build a to-do app", done: false },
+      { text: "Practice more", done: false }
+    ]
+  })
   const [inputValue, setInputValue] = useState("")
   const [editIndex, setEditIndex] = useState(null)
+
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos))
+  }, [todos])
 
   const handleAdd = () => {
     if (inputValue.trim() === "") return
