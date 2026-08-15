@@ -102,6 +102,23 @@ function App() {
     setTasks(tasks.filter((task) => task.id !== id))
   }
 
+
+//
+const handleToggleTaskDone = async (task) => {
+  const res = await fetch(`http://localhost:3000/tasks/${task.id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      title: task.title,
+      priority: task.priority,
+      category: task.category,
+      due_date: task.due_date,
+      completed: !task.completed
+    })
+  })
+  const updated = await res.json()
+  setTasks(tasks.map((t) => (t.id === task.id ? updated : t)))
+}
   return (
     <div className="app">
       <h1>My Task Manager</h1>
