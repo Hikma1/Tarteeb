@@ -2,37 +2,48 @@ import { useState, useEffect } from 'react'
 import './App.css'
 
 function App() {
-  const [todos, setTodos] = useState(() => {
-    const saved = localStorage.getItem("todos")
-    return saved ? JSON.parse(saved) : [
-      { text: "Learn React", done: false },
-      { text: "Build a to-do app", done: false },
-      { text: "Practice more", done: false }
-    ]
-  })
+  const [todos, setTodos] = useState([])
   const [inputValue, setInputValue] = useState("")
   const [editIndex, setEditIndex] = useState(null)
 
   useEffect(() => {
-    localStorage.setItem("todos", JSON.stringify(todos))
-  }, [todos])
+    fetch("http://localhost:3000/todos")
+      .then((res) => res.json())
+      .then((data) => setTodos(data))
+      .catch((err) => console.log(err))
+  }, [])
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (inputValue.trim() === "") return
 
     if (editIndex !== null) {
+      const todoToUpdate = todos[editIndex]
+      const res = await fetch(`http://localhost:3000/todos/${todoToUpdate.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: inputValue, done: todoToUpdate.done })
+      })
+      const updated = await res.json()
       const updatedTodos = [...todos]
-      updatedTodos[editIndex] = { ...updatedTodos[editIndex], text: inputValue }
+      updatedTodos[editIndex] = updated
       setTodos(updatedTodos)
       setEditIndex(null)
     } else {
-      setTodos([...todos, { text: inputValue, done: false }])
+      const res = await fetch("http://localhost:3000/todos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: inputValue })
+      })
+      const newTodo = await res.json()
+      setTodos([...todos, newTodo])
     }
     setInputValue("")
   }
 
-  const handleDelete = (indexToRemove) => {
-    setTodos(todos.filter((todo, index) => index !== indexToRemove))
+  const handleDelete = async (index) => {
+    const todoToDelete = todos[index]
+    await fetch(`http://localhost:3000/todos/${todoToDelete.id}`, { method: "DELETE" })
+    setTodos(todos.filter((todo, i) => i !== index))
   }
 
   const handleEdit = (index) => {
@@ -40,9 +51,16 @@ function App() {
     setEditIndex(index)
   }
 
-  const handleToggleDone = (index) => {
+  const handleToggleDone = async (index) => {
+    const todo = todos[index]
+    const res = await fetch(`http://localhost:3000/todos/${todo.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: todo.text, done: !todo.done })
+    })
+    const updated = await res.json()
     const updatedTodos = [...todos]
-    updatedTodos[index] = { ...updatedTodos[index], done: !updatedTodos[index].done }
+    updatedTodos[index] = updated
     setTodos(updatedTodos)
   }
 
@@ -59,7 +77,7 @@ function App() {
       </div>
       <ul>
         {todos.map((todo, index) => (
-          <li key={index}>
+          <li key={todo.id}>
             <input
               type="checkbox"
               checked={todo.done}
