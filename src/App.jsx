@@ -149,16 +149,7 @@ const handleToggleTaskDone = async (task) => {
         <button onClick={handleAddTask}>Add Task</button>
       </div>
 
-      <ul className="task-list">
-        {tasks.map((task) => (
-          <li key={task.id} className={`priority-${task.priority.toLowerCase()}`}>
-            <span className="task-title">{task.title}</span>
-            <span className="task-meta">{task.category} · {task.priority}</span>
-            {task.due_date && <span className="task-due">Due: {task.due_date.slice(0, 10)}</span>}
-            <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
-          </li>
-        ))}
-      </ul>
+    
 
       <hr />
 
