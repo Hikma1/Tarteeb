@@ -33,3 +33,25 @@ body {
   font-size: 12px;
   color: #666;
 }
+.habit-list {
+  list-style: none;
+  padding: 0;
+}
+
+.habit-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.habit-name {
+  flex: 1;
+  font-weight: 600;
+}
+
+.habit-streak {
+  font-size: 13px;
+  color: #666;
+}
