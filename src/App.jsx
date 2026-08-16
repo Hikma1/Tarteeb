@@ -14,6 +14,9 @@ function App() {
   const [taskCategory, setTaskCategory] = useState("Personal")
   const [taskDueDate, setTaskDueDate] = useState("")
 
+  // --- Dashboard ---
+  const [stats, setStats] = useState(null)
+
   useEffect(() => {
     fetch("http://localhost:3000/todos")
       .then((res) => res.json())
@@ -25,6 +28,13 @@ function App() {
       .then((data) => setTasks(data))
       .catch((err) => console.log(err))
   }, [])
+
+  useEffect(() => {
+    fetch("http://localhost:3000/dashboard")
+      .then((res) => res.json())
+      .then((data) => setStats(data))
+      .catch((err) => console.log(err))
+  }, [tasks, todos])
 
   // --- Todo functions ---
   const handleAdd = async () => {
@@ -102,60 +112,51 @@ function App() {
     setTasks(tasks.filter((task) => task.id !== id))
   }
 
-  const [stats, setStats] = useState(null)
-
-useEffect(() => {
-  fetch("http://localhost:3000/dashboard")
-    .then((res) => res.json())
-    .then((data) => setStats(data))
-    .catch((err) => console.log(err))
-}, [tasks, todos])
-
-//
-const handleToggleTaskDone = async (task) => {
-  const res = await fetch(`http://localhost:3000/tasks/${task.id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      title: task.title,
-      priority: task.priority,
-      category: task.category,
-      due_date: task.due_date,
-      completed: !task.completed
+  const handleToggleTaskDone = async (task) => {
+    const res = await fetch(`http://localhost:3000/tasks/${task.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: task.title,
+        priority: task.priority,
+        category: task.category,
+        due_date: task.due_date,
+        completed: !task.completed
+      })
     })
-  })
-  const updated = await res.json()
-  setTasks(tasks.map((t) => (t.id === task.id ? updated : t)))
-}
+    const updated = await res.json()
+    setTasks(tasks.map((t) => (t.id === task.id ? updated : t)))
+  }
 
-{stats && (
-  <div className="dashboard">
-    <h2>Dashboard</h2>
-    <div className="stats-grid">
-      <div className="stat-card">
-        <span className="stat-number">{stats.totalTasks - stats.completedTasks}</span>
-        <span className="stat-label">Tasks Remaining</span>
-      </div>
-      <div className="stat-card">
-        <span className="stat-number">{stats.highPriorityRemaining}</span>
-        <span className="stat-label">High Priority</span>
-      </div>
-      <div className="stat-card">
-        <span className="stat-number">{stats.doneTodos}/{stats.totalTodos}</span>
-        <span className="stat-label">Todos Done</span>
-      </div>
-      <div className="stat-card">
-        <span className="stat-number">
-          {stats.totalTasks > 0 ? Math.round((stats.completedTasks / stats.totalTasks) * 100) : 0}%
-        </span>
-        <span className="stat-label">Task Progress</span>
-      </div>
-    </div>
-  </div>
-)}
   return (
     <div className="app">
       <h1>My Task Manager</h1>
+
+      {stats && (
+        <div className="dashboard">
+          <h2>Dashboard</h2>
+          <div className="stats-grid">
+            <div className="stat-card">
+              <span className="stat-number">{stats.totalTasks - stats.completedTasks}</span>
+              <span className="stat-label">Tasks Remaining</span>
+            </div>
+            <div className="stat-card">
+              <span className="stat-number">{stats.highPriorityRemaining}</span>
+              <span className="stat-label">High Priority</span>
+            </div>
+            <div className="stat-card">
+              <span className="stat-number">{stats.doneTodos}/{stats.totalTodos}</span>
+              <span className="stat-label">Todos Done</span>
+            </div>
+            <div className="stat-card">
+              <span className="stat-number">
+                {stats.totalTasks > 0 ? Math.round((stats.completedTasks / stats.totalTasks) * 100) : 0}%
+              </span>
+              <span className="stat-label">Task Progress</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="task-form">
         <input
@@ -183,26 +184,26 @@ const handleToggleTaskDone = async (task) => {
         <button onClick={handleAddTask}>Add Task</button>
       </div>
 
-    <ul className="task-list">
-  {tasks.map((task) => (
-    <li key={task.id} className={`priority-${task.priority.toLowerCase()}`}>
-      <input
-        type="checkbox"
-        checked={task.completed}
-        onChange={() => handleToggleTaskDone(task)}
-      />
-      <span
-        className="task-title"
-        style={{ textDecoration: task.completed ? "line-through" : "none" }}
-      >
-        {task.title}
-      </span>
-      <span className="task-meta">{task.category} · {task.priority}</span>
-      {task.due_date && <span className="task-due">Due: {task.due_date.slice(0, 10)}</span>}
-      <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
-    </li>
-  ))}
-</ul>
+      <ul className="task-list">
+        {tasks.map((task) => (
+          <li key={task.id} className={`priority-${task.priority.toLowerCase()}`}>
+            <input
+              type="checkbox"
+              checked={task.completed}
+              onChange={() => handleToggleTaskDone(task)}
+            />
+            <span
+              className="task-title"
+              style={{ textDecoration: task.completed ? "line-through" : "none" }}
+            >
+              {task.title}
+            </span>
+            <span className="task-meta">{task.category} · {task.priority}</span>
+            {task.due_date && <span className="task-due">Due: {task.due_date.slice(0, 10)}</span>}
+            <button onClick={() => handleDeleteTask(task.id)}>Delete</button>
+          </li>
+        ))}
+      </ul>
 
       <hr />
 
