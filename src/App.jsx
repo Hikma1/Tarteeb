@@ -119,6 +119,32 @@ const handleToggleTaskDone = async (task) => {
   const updated = await res.json()
   setTasks(tasks.map((t) => (t.id === task.id ? updated : t)))
 }
+
+{stats && (
+  <div className="dashboard">
+    <h2>Dashboard</h2>
+    <div className="stats-grid">
+      <div className="stat-card">
+        <span className="stat-number">{stats.totalTasks - stats.completedTasks}</span>
+        <span className="stat-label">Tasks Remaining</span>
+      </div>
+      <div className="stat-card">
+        <span className="stat-number">{stats.highPriorityRemaining}</span>
+        <span className="stat-label">High Priority</span>
+      </div>
+      <div className="stat-card">
+        <span className="stat-number">{stats.doneTodos}/{stats.totalTodos}</span>
+        <span className="stat-label">Todos Done</span>
+      </div>
+      <div className="stat-card">
+        <span className="stat-number">
+          {stats.totalTasks > 0 ? Math.round((stats.completedTasks / stats.totalTasks) * 100) : 0}%
+        </span>
+        <span className="stat-label">Task Progress</span>
+      </div>
+    </div>
+  </div>
+)}
   return (
     <div className="app">
       <h1>My Task Manager</h1>
