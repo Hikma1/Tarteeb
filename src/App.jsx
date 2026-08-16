@@ -102,6 +102,14 @@ function App() {
     setTasks(tasks.filter((task) => task.id !== id))
   }
 
+  const [stats, setStats] = useState(null)
+
+useEffect(() => {
+  fetch("http://localhost:3000/dashboard")
+    .then((res) => res.json())
+    .then((data) => setStats(data))
+    .catch((err) => console.log(err))
+}, [tasks, todos])
 
 //
 const handleToggleTaskDone = async (task) => {
