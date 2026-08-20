@@ -366,3 +366,91 @@ input:focus, select:focus {
   width: 68px;
   margin-left: auto;
 }
+
+/* ---------- Interactivity ---------- */
+
+.tab-item {
+  position: relative;
+}
+
+.tab-item::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: #E2A63B;
+  transform: scaleY(0);
+  transition: transform 0.2s ease;
+}
+
+.tab-item.active::after {
+  transform: scaleY(1);
+}
+
+.entry-list li {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.entry-list li:hover {
+  transform: translateX(3px);
+  box-shadow: 0 3px 10px rgba(31, 42, 36, 0.06);
+  border-color: #D9D4C6;
+}
+
+.btn-fill {
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.btn-fill:active {
+  transform: scale(0.97);
+}
+
+.btn-outline {
+  transition: background 0.15s ease, transform 0.1s ease;
+}
+
+.btn-outline:active {
+  transform: scale(0.96);
+}
+
+.btn-text {
+  transition: color 0.15s ease;
+}
+
+.track-fill {
+  transition: width 0.4s ease;
+}
+
+.counter-value {
+  transition: color 0.2s ease;
+}
+
+.counter:hover .counter-value {
+  color: #2F6F4E;
+}
+
+input[type="text"], input[type="date"], input[type="number"], select {
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+input[type="text"]:focus, input[type="date"]:focus, input[type="number"]:focus, select:focus {
+  box-shadow: 0 0 0 3px rgba(47, 111, 78, 0.12);
+}
+
+.entry-list li input[type="checkbox"] {
+  cursor: pointer;
+  accent-color: #2F6F4E;
+  width: 16px;
+  height: 16px;
+}
+
+section {
+  animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
