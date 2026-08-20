@@ -18,6 +18,16 @@ function App() {
   const [habits, setHabits] = useState([])
   const [habitName, setHabitName] = useState("")
 
+  // --- Study: Subjects ---
+  const [subjects, setSubjects] = useState([])
+  const [subjectName, setSubjectName] = useState("")
+
+  // --- Study: Sessions ---
+  const [sessions, setSessions] = useState([])
+  const [sessionSubjectId, setSessionSubjectId] = useState("")
+  const [sessionDuration, setSessionDuration] = useState("")
+  const [sessionNotes, setSessionNotes] = useState("")
+
   // --- Dashboard ---
   const [stats, setStats] = useState(null)
 
@@ -35,6 +45,16 @@ function App() {
     fetch("http://localhost:3000/habits")
       .then((res) => res.json())
       .then((data) => setHabits(data))
+      .catch((err) => console.log(err))
+
+    fetch("http://localhost:3000/subjects")
+      .then((res) => res.json())
+      .then((data) => setSubjects(data))
+      .catch((err) => console.log(err))
+
+    fetch("http://localhost:3000/sessions")
+      .then((res) => res.json())
+      .then((data) => setSessions(data))
       .catch((err) => console.log(err))
   }, [])
 
@@ -168,6 +188,47 @@ function App() {
     setHabits(habits.filter((h) => h.id !== id))
   }
 
+  // --- Study functions ---
+  const handleAddSubject = async () => {
+    if (subjectName.trim() === "") return
+    const res = await fetch("http://localhost:3000/subjects", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name: subjectName })
+    })
+    const newSubject = await res.json()
+    setSubjects([...subjects, newSubject])
+    setSubjectName("")
+  }
+
+  const handleUpdateProgress = async (id, progress) => {
+    const res = await fetch(`http://localhost:3000/subjects/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ progress })
+    })
+    const updated = await res.json()
+    setSubjects(subjects.map((s) => (s.id === id ? updated : s)))
+  }
+
+  const handleAddSession = async () => {
+    if (!sessionSubjectId || !sessionDuration) return
+    const res = await fetch("http://localhost:3000/sessions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        subject_id: sessionSubjectId,
+        duration_minutes: sessionDuration,
+        notes: sessionNotes
+      })
+    })
+    const newSession = await res.json()
+    const subject = subjects.find((s) => s.id === parseInt(sessionSubjectId))
+    setSessions([{ ...newSession, subject_name: subject.name }, ...sessions])
+    setSessionDuration("")
+    setSessionNotes("")
+  }
+
   return (
     <div className="app">
       <h1>My Task Manager</h1>
@@ -292,6 +353,68 @@ function App() {
             <span className="habit-streak">🔥 {habit.streak} day streak</span>
             <button onClick={() => handleCheckIn(habit.id)}>Check In</button>
             <button onClick={() => handleDeleteHabit(habit.id)}>Delete</button>
+          </li>
+        ))}
+      </ul>
+
+      <hr />
+
+      <h2>Study — Subjects</h2>
+      <div className="input-row">
+        <input
+          type="text"
+          placeholder="New subject"
+          value={subjectName}
+          onChange={(e) => setSubjectName(e.target.value)}
+        />
+        <button onClick={handleAddSubject}>Add Subject</button>
+      </div>
+      <ul className="subject-list">
+        {subjects.map((subject) => (
+          <li key={subject.id}>
+            <span className="subject-name">{subject.name}</span>
+            <div className="progress-bar">
+              <div className="progress-fill" style={{ width: `${subject.progress}%` }}></div>
+            </div>
+            <span>{subject.progress}%</span>
+            <input
+              type="number"
+              min="0"
+              max="100"
+              placeholder="Update %"
+              onBlur={(e) => e.target.value && handleUpdateProgress(subject.id, parseInt(e.target.value))}
+            />
+          </li>
+        ))}
+      </ul>
+
+      <h2>Study Sessions</h2>
+      <div className="input-row">
+        <select value={sessionSubjectId} onChange={(e) => setSessionSubjectId(e.target.value)}>
+          <option value="">Select subject</option>
+          {subjects.map((s) => (
+            <option key={s.id} value={s.id}>{s.name}</option>
+          ))}
+        </select>
+        <input
+          type="number"
+          placeholder="Minutes"
+          value={sessionDuration}
+          onChange={(e) => setSessionDuration(e.target.value)}
+        />
+        <input
+          type="text"
+          placeholder="Notes (optional)"
+          value={sessionNotes}
+          onChange={(e) => setSessionNotes(e.target.value)}
+        />
+        <button onClick={handleAddSession}>Log Session</button>
+      </div>
+      <ul className="session-list">
+        {sessions.map((session) => (
+          <li key={session.id}>
+            <strong>{session.subject_name}</strong> — {session.duration_minutes} min
+            {session.notes && <span> · {session.notes}</span>}
           </li>
         ))}
       </ul>
