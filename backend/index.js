@@ -261,4 +261,84 @@ app.delete("/habits/:id", async (req, res) => {
   }
 });
 
+// ---------- SUBJECTS ----------
+
+app.post("/subjects", async (req, res) => {
+  try {
+    const { name } = req.body;
+    const result = await pool.query(
+      "INSERT INTO subjects (name, progress) VALUES ($1, 0) RETURNING *",
+      [name]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.get("/subjects", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM subjects ORDER BY id");
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put("/subjects/:id", async (req, res) => {
+  try {
+    const { progress } = req.body;
+    const result = await pool.query(
+      "UPDATE subjects SET progress = $1 WHERE id = $2 RETURNING *",
+      [progress, req.params.id]
+    );
+    res.json(result.rows[0]);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.delete("/subjects/:id", async (req, res) => {
+  try {
+    await pool.query("DELETE FROM subjects WHERE id = $1", [req.params.id]);
+    res.json({ message: "Subject deleted" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ---------- STUDY SESSIONS ----------
+
+app.post("/sessions", async (req, res) => {
+  try {
+    const { subject_id, duration_minutes, notes } = req.body;
+    const result = await pool.query(
+      "INSERT INTO study_sessions (subject_id, duration_minutes, notes) VALUES ($1, $2, $3) RETURNING *",
+      [subject_id, duration_minutes, notes || null]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.get("/sessions", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT study_sessions.*, subjects.name AS subject_name FROM study_sessions JOIN subjects ON study_sessions.subject_id = subjects.id ORDER BY session_date DESC"
+    );
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete("/sessions/:id", async (req, res) => {
+  try {
+    await pool.query("DELETE FROM study_sessions WHERE id = $1", [req.params.id]);
+    res.json({ message: "Session deleted" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 app.listen(3000, () => console.log("Server running on port 3000"));
