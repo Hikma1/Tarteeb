@@ -3,6 +3,9 @@ const express = require("express");
 const { Pool } = require("pg");
 const cors = require("cors");
 
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
 const app = express();
 app.use(cors());
 app.use(express.json());
