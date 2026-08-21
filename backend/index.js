@@ -345,5 +345,39 @@ app.delete("/sessions/:id", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+// ---------- AUTH ----------
+
+app.post("/signup", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const passwordHash = await bcrypt.hash(password, 10);
+    const result = await pool.query(
+      "INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email",
+      [email, passwordHash]
+    );
+    const user = result.rows[0];
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    res.status(201).json({ user, token });
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const result = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
+    const user = result.rows[0];
+    if (!user) return res.status(401).json({ error: "Invalid email or password" });
+
+    const validPassword = await bcrypt.compare(password, user.password_hash);
+    if (!validPassword) return res.status(401).json({ error: "Invalid email or password" });
+
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    res.json({ user: { id: user.id, email: user.email }, token });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 app.listen(3000, () => console.log("Server running on port 3000"));
