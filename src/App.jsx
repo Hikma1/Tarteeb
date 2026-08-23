@@ -33,6 +33,12 @@ function App() {
   // --- Dashboard ---
   const [stats, setStats] = useState(null)
 
+const [token, setToken] = useState(localStorage.getItem("token"))
+const [authEmail, setAuthEmail] = useState("")
+const [authPassword, setAuthPassword] = useState("")
+const [authMode, setAuthMode] = useState("login")
+const [authError, setAuthError] = useState("")
+
   useEffect(() => {
     fetch("http://localhost:3000/todos")
       .then((res) => res.json())
