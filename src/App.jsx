@@ -292,36 +292,58 @@ function App() {
 
   // --- Not logged in: show auth screen ---
   if (!token) {
+    const today = new Date()
+    const dateLabel = today.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })
+
     return (
       <div className="auth-screen">
-        <div className="auth-card">
-          <div className="wordmark">
-            <span className="wordmark-en">Tarteeb</span>
-            <span className="wordmark-sub">ordered days</span>
+        <div className="auth-panel">
+          <div className="auth-panel-top">
+            <span className="wordmark-en light">Tarteeb</span>
+            <span className="wordmark-sub light">ordered days</span>
           </div>
-          <h1 className="auth-title">{authMode === "login" ? "Log in" : "Create an account"}</h1>
-          <input
-            type="email"
-            placeholder="Email"
-            value={authEmail}
-            onChange={(e) => setAuthEmail(e.target.value)}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={authPassword}
-            onChange={(e) => setAuthPassword(e.target.value)}
-          />
-          {authError && <p className="auth-error">{authError}</p>}
-          <button className="btn-fill auth-submit" onClick={handleAuth}>
-            {authMode === "login" ? "Log in" : "Sign up"}
-          </button>
-          <button
-            className="btn-text auth-switch"
-            onClick={() => { setAuthMode(authMode === "login" ? "signup" : "login"); setAuthError("") }}
-          >
-            {authMode === "login" ? "Need an account? Sign up" : "Already have an account? Log in"}
-          </button>
+          <div className="auth-panel-quote">
+            <p>&ldquo;Tarteeb&rdquo; — order, arrangement. A place to keep tasks,<br />habits, and study in one ledger.</p>
+          </div>
+          <div className="auth-panel-date">{dateLabel}</div>
+        </div>
+
+        <div className="auth-form-side">
+          <div className="auth-card">
+            <span className="eyebrow">{authMode === "login" ? "Welcome back" : "Get started"}</span>
+            <h1 className="auth-title">{authMode === "login" ? "Log in" : "Create an account"}</h1>
+
+            <label className="auth-label">
+              Email
+              <input
+                type="email"
+                placeholder="you@example.com"
+                value={authEmail}
+                onChange={(e) => setAuthEmail(e.target.value)}
+              />
+            </label>
+            <label className="auth-label">
+              Password
+              <input
+                type="password"
+                placeholder="••••••••"
+                value={authPassword}
+                onChange={(e) => setAuthPassword(e.target.value)}
+              />
+            </label>
+
+            {authError && <p className="auth-error">{authError}</p>}
+
+            <button className="btn-fill auth-submit" onClick={handleAuth}>
+              {authMode === "login" ? "Log in" : "Sign up"}
+            </button>
+            <button
+              className="btn-text auth-switch"
+              onClick={() => { setAuthMode(authMode === "login" ? "signup" : "login"); setAuthError("") }}
+            >
+              {authMode === "login" ? "Need an account? Sign up" : "Already have an account? Log in"}
+            </button>
+          </div>
         </div>
       </div>
     )
