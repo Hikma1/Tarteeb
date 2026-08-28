@@ -270,8 +270,8 @@ app.post("/habits", authenticateToken, async (req, res) => {
   try {
     const { name } = req.body;
     const result = await pool.query(
-      "INSERT INTO habits (name, streak, last_completed_date) VALUES ($1, 0, NULL) RETURNING *",
-      [name]
+      "INSERT INTO habits (name, streak, last_completed_date, user_id) VALUES ($1, 0, NULL, $2) RETURNING *",
+      [name, req.userId]
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
@@ -281,7 +281,7 @@ app.post("/habits", authenticateToken, async (req, res) => {
 
 app.get("/habits", authenticateToken, async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM habits ORDER BY created_at");
+    const result = await pool.query("SELECT * FROM habits WHERE user_id = $1 ORDER BY created_at", [req.userId]);
     res.json(result.rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -290,7 +290,7 @@ app.get("/habits", authenticateToken, async (req, res) => {
 
 app.post("/habits/:id/checkin", authenticateToken, async (req, res) => {
   try {
-    const habitResult = await pool.query("SELECT * FROM habits WHERE id = $1", [req.params.id]);
+    const habitResult = await pool.query("SELECT * FROM habits WHERE id = $1 AND user_id = $2", [req.params.id, req.userId]);
     const habit = habitResult.rows[0];
     if (!habit) return res.status(404).json({ error: "Habit not found" });
 
@@ -315,8 +315,8 @@ app.post("/habits/:id/checkin", authenticateToken, async (req, res) => {
     }
 
     const result = await pool.query(
-      "UPDATE habits SET streak = $1, last_completed_date = $2 WHERE id = $3 RETURNING *",
-      [newStreak, today, req.params.id]
+      "UPDATE habits SET streak = $1, last_completed_date = $2 WHERE id = $3  AND user_id = $4 RETURNING *",
+      [newStreak, today, req.params.id, req.userId]
     );
     res.json(result.rows[0]);
   } catch (error) {
@@ -326,7 +326,7 @@ app.post("/habits/:id/checkin", authenticateToken, async (req, res) => {
 
 app.delete("/habits/:id", authenticateToken, async (req, res) => {
   try {
-    await pool.query("DELETE FROM habits WHERE id = $1", [req.params.id]);
+    await pool.query("DELETE FROM habits WHERE id = $1 AND user_id = $2", [req.params.id, req.userId]);
     res.json({ message: "Habit deleted" });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -339,8 +339,8 @@ app.post("/subjects", authenticateToken, async (req, res) => {
   try {
     const { name } = req.body;
     const result = await pool.query(
-      "INSERT INTO subjects (name, progress) VALUES ($1, 0) RETURNING *",
-      [name]
+      "INSERT INTO subjects (name, progress, user_id) VALUES ($1, 0, $2) RETURNING *",
+      [name, req.userId]
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
@@ -350,7 +350,7 @@ app.post("/subjects", authenticateToken, async (req, res) => {
 
 app.get("/subjects", authenticateToken, async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM subjects ORDER BY id");
+    const result = await pool.query("SELECT * FROM subjects WHERE user_id = $1 ORDER BY id", [req.userId]);
     res.json(result.rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -361,8 +361,8 @@ app.put("/subjects/:id", authenticateToken, async (req, res) => {
   try {
     const { progress } = req.body;
     const result = await pool.query(
-      "UPDATE subjects SET progress = $1 WHERE id = $2 RETURNING *",
-      [progress, req.params.id]
+      "UPDATE subjects SET progress = $1 WHERE id = $2 AND user_id = $3 RETURNING *",
+      [progress, req.params.id, req.userId]
     );
     res.json(result.rows[0]);
   } catch (error) {
@@ -372,7 +372,7 @@ app.put("/subjects/:id", authenticateToken, async (req, res) => {
 
 app.delete("/subjects/:id", authenticateToken, async (req, res) => {
   try {
-    await pool.query("DELETE FROM subjects WHERE id = $1", [req.params.id]);
+    await pool.query("DELETE FROM subjects WHERE id = $1 AND user_id = $2", [req.params.id, req.userId]);
     res.json({ message: "Subject deleted" });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -383,10 +383,10 @@ app.delete("/subjects/:id", authenticateToken, async (req, res) => {
 
 app.post("/sessions", authenticateToken, async (req, res) => {
   try {
-    const { subject_id, duration_minutes, notes } = req.body;
+    const { subject_id, duration_minutes, notes, } = req.body;
     const result = await pool.query(
-      "INSERT INTO study_sessions (subject_id, duration_minutes, notes) VALUES ($1, $2, $3) RETURNING *",
-      [subject_id, duration_minutes, notes || null]
+      "INSERT INTO study_sessions (subject_id, duration_minutes, notes,user_id) VALUES ($1, $2, $3,$4) RETURNING *",
+      [subject_id, duration_minutes, notes || null, req.userId]
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
@@ -397,7 +397,8 @@ app.post("/sessions", authenticateToken, async (req, res) => {
 app.get("/sessions", authenticateToken, async (req, res) => {
   try {
     const result = await pool.query(
-      "SELECT study_sessions.*, subjects.name AS subject_name FROM study_sessions JOIN subjects ON study_sessions.subject_id = subjects.id ORDER BY session_date DESC"
+      "SELECT study_sessions.*, subjects.name AS subject_name FROM study_sessions JOIN subjects ON study_sessions.subject_id = subjects.id WHERE study_sessions.user_id = $1 ORDER BY session_date DESC",
+      [req.userId]
     );
     res.json(result.rows);
   } catch (error) {
@@ -407,7 +408,7 @@ app.get("/sessions", authenticateToken, async (req, res) => {
 
 app.delete("/sessions/:id", authenticateToken, async (req, res) => {
   try {
-    await pool.query("DELETE FROM study_sessions WHERE id = $1", [req.params.id]);
+    await pool.query("DELETE FROM study_sessions WHERE id = $1 AND user_id= $2 RETURNING *", [req.params.id, req.userId]);
     res.json({ message: "Session deleted" });
   } catch (error) {
     res.status(500).json({ error: error.message });
