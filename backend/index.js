@@ -125,7 +125,57 @@ app.delete("/courses/:id", authenticateToken, async (req, res) => {
 });
 
 // ---------- TODOS (protected) ----------
+app.post("/todos", authenticateToken, async (req, res) => {
+  try {
+    const { text } = req.body;
+    const result = await pool.query(
+      "INSERT INTO todos (text, done, user_id) VALUES ($1, false, $2) RETURNING *",
+      [text, req.userId]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
 
+app.get("/todos", authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM todos WHERE user_id = $1 ORDER BY id",
+      [req.userId]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.put("/todos/:id", authenticateToken, async (req, res) => {
+  try {
+    const { text, done } = req.body;
+    const result = await pool.query(
+      "UPDATE todos SET text = $1, done = $2 WHERE id = $3 AND user_id = $4 RETURNING *",
+      [text, done, req.params.id, req.userId]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ error: "Todo not found" });
+    res.json(result.rows[0]);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+app.delete("/todos/:id", authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query(
+      "DELETE FROM todos WHERE id = $1 AND user_id = $2 RETURNING *",
+      [req.params.id, req.userId]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ error: "Todo not found" });
+    res.json({ message: "Todo deleted" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 // ---------- TASKS (protected) ----------
 
