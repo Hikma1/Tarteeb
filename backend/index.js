@@ -126,49 +126,6 @@ app.delete("/courses/:id", authenticateToken, async (req, res) => {
 
 // ---------- TODOS (protected) ----------
 
-app.post("/todos", authenticateToken, async (req, res) => {
-  try {
-    const { text } = req.body;
-    const result = await pool.query(
-      "INSERT INTO todos (text, done) VALUES ($1, false) RETURNING *",
-      [text]
-    );
-    res.status(201).json(result.rows[0]);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
-
-app.get("/todos", authenticateToken, async (req, res) => {
-  try {
-    const result = await pool.query("SELECT * FROM todos ORDER BY id");
-    res.json(result.rows);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.put("/todos/:id", authenticateToken, async (req, res) => {
-  try {
-    const { text, done } = req.body;
-    const result = await pool.query(
-      "UPDATE todos SET text = $1, done = $2 WHERE id = $3 RETURNING *",
-      [text, done, req.params.id]
-    );
-    res.json(result.rows[0]);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
-});
-
-app.delete("/todos/:id", authenticateToken, async (req, res) => {
-  try {
-    await pool.query("DELETE FROM todos WHERE id = $1", [req.params.id]);
-    res.json({ message: "Todo deleted" });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
 
 // ---------- TASKS (protected) ----------
 
