@@ -176,8 +176,8 @@ app.post("/tasks", authenticateToken, async (req, res) => {
   try {
     const { title, priority, category, due_date } = req.body;
     const result = await pool.query(
-      "INSERT INTO tasks (title, priority, category, due_date) VALUES ($1, $2, $3, $4) RETURNING *",
-      [title, priority || "Medium", category || "Personal", due_date || null]
+      "INSERT INTO tasks (title, priority, category, due_date, user_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [title, priority || "Medium", category || "Personal", due_date || null, req.userId]
     );
     res.status(201).json(result.rows[0]);
   } catch (error) {
@@ -187,7 +187,10 @@ app.post("/tasks", authenticateToken, async (req, res) => {
 
 app.get("/tasks", authenticateToken, async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM tasks ORDER BY created_at DESC");
+    const result = await pool.query(
+      "SELECT * FROM tasks WHERE user_id = $1 ORDER BY created_at DESC",
+      [req.userId]
+    );
     res.json(result.rows);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -196,7 +199,10 @@ app.get("/tasks", authenticateToken, async (req, res) => {
 
 app.get("/tasks/:id", authenticateToken, async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM tasks WHERE id = $1", [req.params.id]);
+    const result = await pool.query(
+      "SELECT * FROM tasks WHERE id = $1 AND user_id = $2",
+      [req.params.id, req.userId]
+    );
     if (result.rows.length === 0) return res.status(404).json({ error: "Task not found" });
     res.json(result.rows[0]);
   } catch (error) {
@@ -208,9 +214,10 @@ app.put("/tasks/:id", authenticateToken, async (req, res) => {
   try {
     const { title, priority, category, due_date, completed } = req.body;
     const result = await pool.query(
-      "UPDATE tasks SET title = $1, priority = $2, category = $3, due_date = $4, completed = $5 WHERE id = $6 RETURNING *",
-      [title, priority, category, due_date, completed, req.params.id]
+      "UPDATE tasks SET title = $1, priority = $2, category = $3, due_date = $4, completed = $5 WHERE id = $6 AND user_id = $7 RETURNING *",
+      [title, priority, category, due_date, completed, req.params.id, req.userId]
     );
+    if (result.rows.length === 0) return res.status(404).json({ error: "Task not found" });
     res.json(result.rows[0]);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -219,7 +226,11 @@ app.put("/tasks/:id", authenticateToken, async (req, res) => {
 
 app.delete("/tasks/:id", authenticateToken, async (req, res) => {
   try {
-    await pool.query("DELETE FROM tasks WHERE id = $1", [req.params.id]);
+    const result = await pool.query(
+      "DELETE FROM tasks WHERE id = $1 AND user_id = $2 RETURNING *",
+      [req.params.id, req.userId]
+    );
+    if (result.rows.length === 0) return res.status(404).json({ error: "Task not found" });
     res.json({ message: "Task deleted" });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -228,11 +239,11 @@ app.delete("/tasks/:id", authenticateToken, async (req, res) => {
 
 app.get("/dashboard", authenticateToken, async (req, res) => {
   try {
-    const totalTasks = await pool.query("SELECT COUNT(*) FROM tasks");
-    const completedTasks = await pool.query("SELECT COUNT(*) FROM tasks WHERE completed = true");
-    const highPriority = await pool.query("SELECT COUNT(*) FROM tasks WHERE priority = 'High' AND completed = false");
-    const totalTodos = await pool.query("SELECT COUNT(*) FROM todos");
-    const doneTodos = await pool.query("SELECT COUNT(*) FROM todos WHERE done = true");
+    const totalTasks = await pool.query("SELECT COUNT(*) FROM tasks WHERE user_id = $1", [req.userId]);
+    const completedTasks = await pool.query("SELECT COUNT(*) FROM tasks WHERE completed = true AND user_id = $1", [req.userId]);
+    const highPriority = await pool.query("SELECT COUNT(*) FROM tasks WHERE priority = 'High' AND completed = false AND user_id = $1", [req.userId]);
+    const totalTodos = await pool.query("SELECT COUNT(*) FROM todos WHERE user_id = $1", [req.userId]);
+    const doneTodos = await pool.query("SELECT COUNT(*) FROM todos WHERE done = true AND user_id = $1", [req.userId]);
 
     res.json({
       totalTasks: parseInt(totalTasks.rows[0].count),
