@@ -75,11 +75,13 @@ function App() {
     }
   }
 
-  const handleLogout = () => {
-    localStorage.removeItem("token")
-    setToken(null)
-  }
-
+const handleLogout = () => {
+  if (!window.confirm("Log out of Tarteeb?")) return
+  localStorage.removeItem("token")
+  localStorage.removeItem("userEmail")
+  setToken(null)
+  setUserEmail(null)
+}
   useEffect(() => {
     if (!token) return
 
