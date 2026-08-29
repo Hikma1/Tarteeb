@@ -371,7 +371,8 @@ const handleLogout = () => {
               {item.label}
             </button>
           ))}
-        </nav>
+               </nav>
+        <div className="user-badge">{userEmail}</div>
         <button className="logout-btn" onClick={handleLogout}>Log out</button>
       </aside>
 
