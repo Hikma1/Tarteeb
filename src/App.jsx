@@ -6,6 +6,7 @@ function App() {
 
   // --- Auth ---
   const [token, setToken] = useState(localStorage.getItem("token"))
+  const [userEmail, setUserEmail] = useState(localStorage.getItem("userEmail"))
   const [authEmail, setAuthEmail] = useState("")
   const [authPassword, setAuthPassword] = useState("")
   const [authMode, setAuthMode] = useState("login")
@@ -66,7 +67,9 @@ function App() {
         return
       }
       localStorage.setItem("token", data.token)
+      localStorage.setItem("userEmail", data.user.email)
       setToken(data.token)
+       setUserEmail(data.user.email)
     } catch (err) {
       setAuthError("Something went wrong")
     }
