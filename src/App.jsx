@@ -372,8 +372,13 @@ const handleLogout = () => {
             </button>
           ))}
                </nav>
-        <div className="user-badge">{userEmail}</div>
-        <button className="logout-btn" onClick={handleLogout}>Log out</button>
+<div className="user-chip">
+  <div className="user-avatar">{userEmail ? userEmail[0].toUpperCase() : "?"}</div>
+  <div className="user-info">
+    <span className="user-email">{userEmail}</span>
+    <button className="logout-link" onClick={handleLogout}>Log out</button>
+  </div>
+</div>
       </aside>
 
       <main className="ledger">
