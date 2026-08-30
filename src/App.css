@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap');
 
 * {
   box-sizing: border-box;
@@ -37,6 +37,8 @@ body {
   display: flex;
   flex-direction: column;
   border-right: 3px solid #111111;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 14px 14px;
 }
 
 .wordmark {
@@ -46,21 +48,22 @@ body {
 
 .wordmark-en {
   display: block;
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
-  font-size: 24px;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 800;
+  font-size: 25px;
   color: #F5F3EE;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 .wordmark-sub {
   display: block;
   font-size: 11px;
   font-weight: 600;
-  color: #3355FF;
+  color: #FF5A1F;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   margin-top: 3px;
+  font-family: 'Space Grotesk', sans-serif;
 }
 
 .spine nav {
@@ -95,10 +98,11 @@ body {
 }
 
 .tab-item.active {
-  background: #3355FF;
-  color: #F5F3EE;
+  background: #FF5A1F;
+  color: #111111;
   border-color: #111111;
-  box-shadow: 3px 3px 0 rgba(245, 243, 238, 0.25);
+  box-shadow: 3px 3px 0 rgba(245, 243, 238, 0.2);
+  font-weight: 700;
 }
 
 /* ---------- User chip ---------- */
@@ -119,13 +123,13 @@ body {
   height: 30px;
   flex-shrink: 0;
   border-radius: 3px;
-  background: #3355FF;
-  color: #F5F3EE;
+  background: #FF5A1F;
+  color: #111111;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 800;
   font-size: 14px;
 }
 
@@ -185,6 +189,8 @@ body {
   padding: 44px 48px;
   max-width: 900px;
   width: 100%;
+  background-image: radial-gradient(#E5E1D6 1px, transparent 1px);
+  background-size: 22px 22px;
 }
 
 .ledger-header {
@@ -202,20 +208,21 @@ body {
   padding: 3px 8px;
   border-radius: 2px;
   margin-bottom: 10px;
+  font-family: 'Space Grotesk', sans-serif;
 }
 
 .ledger-header h1 {
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
-  font-size: 32px;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 800;
+  font-size: 34px;
   letter-spacing: -0.02em;
   margin: 0;
   color: #111111;
 }
 
 .block-title {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 18px;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 19px;
   font-weight: 700;
   margin: 32px 0 12px;
   color: #111111;
@@ -245,7 +252,12 @@ body {
   font-size: 30px;
   font-weight: 700;
   color: #111111;
-  transition: none;
+  animation: countIn 0.4s ease;
+}
+
+@keyframes countIn {
+  from { opacity: 0; transform: translateY(6px) scale(0.9); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .counter-of {
@@ -287,8 +299,8 @@ body {
 }
 
 .ledger-block h2 {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 15px;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 16px;
   font-weight: 700;
   margin: 0 0 12px;
   color: #111111;
@@ -311,8 +323,8 @@ body {
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
   font-weight: 700;
-  color: #3355FF;
-  background: #E8ECFF;
+  color: #B8420A;
+  background: #FFE4D6;
   padding: 2px 7px;
   border-radius: 3px;
 }
@@ -350,7 +362,7 @@ input[type="text"], input[type="date"], input[type="number"], input[type="email"
 
 input:focus, select:focus {
   outline: none;
-  box-shadow: 3px 3px 0 #3355FF;
+  box-shadow: 3px 3px 0 #FF5A1F;
   transform: translate(-1px, -1px);
 }
 
@@ -358,18 +370,18 @@ input:focus, select:focus {
   padding: 9px 20px;
   border: 2px solid #111111;
   border-radius: 3px;
-  background: #3355FF;
-  color: #F5F3EE;
+  background: #FF5A1F;
+  color: #111111;
   font-family: 'Space Grotesk', sans-serif;
   font-weight: 700;
   font-size: 14px;
   cursor: pointer;
   box-shadow: 3px 3px 0 #111111;
-  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  transition: transform 0.08s ease, box-shadow 0.08s ease, background 0.12s ease;
 }
 
 .btn-fill:hover {
-  background: #2545e0;
+  background: #ff6f3c;
 }
 
 .btn-fill:active {
@@ -438,6 +450,19 @@ input:focus, select:focus {
   position: relative;
   transition: transform 0.12s ease, box-shadow 0.12s ease;
   box-shadow: 3px 3px 0 rgba(17, 17, 17, 0.15);
+  animation: rowIn 0.3s ease backwards;
+}
+
+.entry-list li:nth-child(1) { animation-delay: 0.02s; }
+.entry-list li:nth-child(2) { animation-delay: 0.06s; }
+.entry-list li:nth-child(3) { animation-delay: 0.10s; }
+.entry-list li:nth-child(4) { animation-delay: 0.14s; }
+.entry-list li:nth-child(5) { animation-delay: 0.18s; }
+.entry-list li:nth-child(n+6) { animation-delay: 0.20s; }
+
+@keyframes rowIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 .entry-list li:hover {
@@ -460,7 +485,7 @@ input:focus, select:focus {
 .tab-low::before { background: #16A34A; }
 .tab-neutral::before { background: #999; }
 .tab-amber::before { background: #FFB800; }
-.tab-blue::before { background: #3355FF; }
+.tab-blue::before { background: #FF5A1F; }
 
 .entry-title {
   font-weight: 600;
@@ -506,7 +531,7 @@ input:focus, select:focus {
 
 .track-fill {
   height: 100%;
-  background: #3355FF;
+  background: #FF5A1F;
   transition: width 0.4s ease;
 }
 
@@ -517,17 +542,17 @@ input:focus, select:focus {
 
 .entry-list li input[type="checkbox"] {
   cursor: pointer;
-  accent-color: #3355FF;
+  accent-color: #FF5A1F;
   width: 17px;
   height: 17px;
 }
 
 section {
-  animation: fadeIn 0.2s ease;
+  animation: fadeIn 0.25s ease;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(4px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -548,6 +573,14 @@ section {
   padding: 56px;
   position: relative;
   overflow: hidden;
+  background-image: radial-gradient(rgba(255, 90, 31, 0.15) 1.5px, transparent 1.5px);
+  background-size: 20px 20px;
+  animation: driftGrid 30s linear infinite;
+}
+
+@keyframes driftGrid {
+  from { background-position: 0 0; }
+  to { background-position: 200px 200px; }
 }
 
 .auth-panel::before {
@@ -557,26 +590,15 @@ section {
   right: 0;
   bottom: 0;
   width: 6px;
-  background: #3355FF;
-}
-
-.auth-panel::after {
-  content: "";
-  position: absolute;
-  width: 340px;
-  height: 340px;
-  border: 3px solid rgba(51, 85, 255, 0.3);
-  border-radius: 50%;
-  bottom: -140px;
-  left: -100px;
+  background: #FF5A1F;
 }
 
 .auth-panel-top .wordmark-en.light {
   display: block;
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 700;
-  font-size: 34px;
-  letter-spacing: -0.02em;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-weight: 800;
+  font-size: 36px;
+  letter-spacing: -0.01em;
   color: #F5F3EE;
 }
 
@@ -584,10 +606,11 @@ section {
   display: block;
   font-size: 12px;
   font-weight: 600;
-  color: #3355FF;
+  color: #FF5A1F;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   margin-top: 4px;
+  font-family: 'Space Grotesk', sans-serif;
 }
 
 .auth-panel-quote {
@@ -596,11 +619,11 @@ section {
 }
 
 .auth-panel-quote p {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Bricolage Grotesque', sans-serif;
   font-weight: 500;
-  font-size: 23px;
+  font-size: 24px;
   line-height: 1.5;
-  color: rgba(245, 243, 238, 0.9);
+  color: rgba(245, 243, 238, 0.92);
   max-width: 380px;
   margin: 0;
 }
@@ -622,6 +645,8 @@ section {
   justify-content: center;
   background: #F5F3EE;
   padding: 40px;
+  background-image: radial-gradient(#E5E1D6 1px, transparent 1px);
+  background-size: 22px 22px;
 }
 
 .auth-card {
@@ -630,13 +655,18 @@ section {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  background: #FFFFFF;
+  border: 3px solid #111111;
+  border-radius: 6px;
+  padding: 32px;
+  box-shadow: 6px 6px 0 #111111;
 }
 
 .auth-title {
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: 'Bricolage Grotesque', sans-serif;
   font-size: 28px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-weight: 800;
+  letter-spacing: -0.01em;
   margin: 2px 0 22px;
   color: #111111;
 }
