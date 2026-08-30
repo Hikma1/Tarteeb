@@ -40,6 +40,7 @@ function App() {
 
   // --- Dashboard ---
   const [stats, setStats] = useState(null)
+  const [currentTime, setCurrentTime] = useState(new Date())
 
   // --- Auth helpers ---
   const authFetch = (url, options = {}) => {
@@ -118,7 +119,10 @@ const handleLogout = () => {
       .then((data) => setStats(data))
       .catch((err) => console.log(err))
   }, [tasks, todos, token])
-
+useEffect(() => {
+  const timer = setInterval(() => setCurrentTime(new Date()), 1000)
+  return () => clearInterval(timer)
+}, [])
   // --- Todo functions ---
   const handleAdd = async () => {
     if (inputValue.trim() === "") return
@@ -443,6 +447,14 @@ const handleLogout = () => {
             <header className="ledger-header">
               <span className="eyebrow">Tasks</span>
               <h1>What needs doing</h1>
+                  <div className="clock-card">
+      <span className="clock-time">
+        {currentTime.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+      </span>
+      <span className="clock-date">
+        {currentTime.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}
+      </span>
+    </div>
             </header>
 
             <div className="entry-panel">
