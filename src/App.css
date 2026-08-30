@@ -714,3 +714,29 @@ section {
 @media (max-width: 780px) {
   .auth-panel { display: none; }
 }
+.clock-card {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 14px;
+  background: #111111;
+  border: 3px solid #111111;
+  border-radius: 4px;
+  padding: 14px 20px;
+  margin-bottom: 22px;
+  box-shadow: 4px 4px 0 #FF5A1F;
+}
+
+.clock-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 26px;
+  font-weight: 700;
+  color: #F5F3EE;
+  font-variant-numeric: tabular-nums;
+}
+
+.clock-date {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #FF5A1F;
+}
