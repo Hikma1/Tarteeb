@@ -311,6 +311,20 @@ useEffect(() => {
             <span className="wordmark-en light">Tarteeb</span>
             <span className="wordmark-sub light">ordered days</span>
           </div>
+          <svg className="books-illustration" viewBox="0 0 220 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="10" y="95" width="150" height="16" rx="2" fill="#FF5A1F" stroke="#111111" strokeWidth="2"/>
+  <rect x="20" y="75" width="130" height="16" rx="2" fill="#F5F3EE" stroke="#111111" strokeWidth="2" transform="rotate(-1 85 83)"/>
+  <rect x="15" y="55" width="120" height="16" rx="2" fill="#FFB800" stroke="#111111" strokeWidth="2" transform="rotate(1.5 75 63)"/>
+  <g transform="translate(140 20) rotate(8)">
+    <rect x="0" y="0" width="16" height="70" rx="2" fill="#16A34A" stroke="#111111" strokeWidth="2"/>
+  </g>
+  <g transform="translate(160 15) rotate(-4)">
+    <rect x="0" y="0" width="16" height="76" rx="2" fill="#FF5A1F" stroke="#111111" strokeWidth="2"/>
+  </g>
+  <g transform="translate(178 25)">
+    <rect x="0" y="0" width="16" height="66" rx="2" fill="#F5F3EE" stroke="#111111" strokeWidth="2"/>
+  </g>
+</svg>   
           <div className="auth-panel-quote">
             <p>&ldquo;Tarteeb&rdquo; — order, arrangement. A place to keep tasks,<br />habits, and study in one ledger.</p>
           </div>
