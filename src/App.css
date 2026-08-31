@@ -740,3 +740,9 @@ section {
   font-weight: 600;
   color: #FF5A1F;
 }
+.books-illustration {
+  width: 200px;
+  height: auto;
+  margin: 28px 0 4px;
+  filter: drop-shadow(4px 4px 0 rgba(255, 90, 31, 0.25));
+}
