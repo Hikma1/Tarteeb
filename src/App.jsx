@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import './App.css'
 
 function App() {
-  const [activeTab, setActiveTab] = useState("dashboard")
+  const [activeTab, setActiveTab] = useState("today")
 
   // --- Auth ---
   const [token, setToken] = useState(localStorage.getItem("token"))
@@ -304,6 +304,18 @@ useEffect(() => {
   if (!token) {
     const today = new Date()
     const dateLabel = today.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })
+
+
+    const todayStr = new Date().toISOString().slice(0, 10)
+
+const dueTodayOrOverdue = tasks.filter(
+  (t) => !t.completed && t.due_date && t.due_date.slice(0, 10) <= todayStr
+)
+const pendingTodos = todos.filter((t) => !t.done)
+const habitsNotCheckedToday = habits.filter(
+  (h) => !h.last_completed_date || h.last_completed_date.slice(0, 10) !== todayStr
+)
+
 
     return (
       <div className="auth-screen">
