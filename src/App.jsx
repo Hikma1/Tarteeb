@@ -70,19 +70,20 @@ function App() {
       localStorage.setItem("token", data.token)
       localStorage.setItem("userEmail", data.user.email)
       setToken(data.token)
-       setUserEmail(data.user.email)
+      setUserEmail(data.user.email)
     } catch (err) {
       setAuthError("Something went wrong")
     }
   }
 
-const handleLogout = () => {
-  if (!window.confirm("Log out of Tarteeb?")) return
-  localStorage.removeItem("token")
-  localStorage.removeItem("userEmail")
-  setToken(null)
-  setUserEmail(null)
-}
+  const handleLogout = () => {
+    if (!window.confirm("Log out of Tarteeb?")) return
+    localStorage.removeItem("token")
+    localStorage.removeItem("userEmail")
+    setToken(null)
+    setUserEmail(null)
+  }
+
   useEffect(() => {
     if (!token) return
 
@@ -119,10 +120,12 @@ const handleLogout = () => {
       .then((data) => setStats(data))
       .catch((err) => console.log(err))
   }, [tasks, todos, token])
-useEffect(() => {
-  const timer = setInterval(() => setCurrentTime(new Date()), 1000)
-  return () => clearInterval(timer)
-}, [])
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000)
+    return () => clearInterval(timer)
+  }, [])
+
   // --- Todo functions ---
   const handleAdd = async () => {
     if (inputValue.trim() === "") return
@@ -288,7 +291,7 @@ useEffect(() => {
   }
 
   const navItems = [
-    {id: "today", label:"Today"},
+    { id: "today", label: "Today" },
     { id: "dashboard", label: "Overview" },
     { id: "tasks", label: "Tasks" },
     { id: "todos", label: "To-Do" },
@@ -300,22 +303,21 @@ useEffect(() => {
     ? Math.round((stats.completedTasks / stats.totalTasks) * 100)
     : 0
 
+  // --- Today view: derived from existing state, no extra fetch needed ---
+  const todayStr = new Date().toISOString().slice(0, 10)
+
+  const dueTodayOrOverdue = tasks.filter(
+    (t) => !t.completed && t.due_date && t.due_date.slice(0, 10) <= todayStr
+  )
+  const pendingTodos = todos.filter((t) => !t.done)
+  const habitsNotCheckedToday = habits.filter(
+    (h) => !h.last_completed_date || h.last_completed_date.slice(0, 10) !== todayStr
+  )
+
   // --- Not logged in: show auth screen ---
   if (!token) {
     const today = new Date()
     const dateLabel = today.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })
-
-
-    const todayStr = new Date().toISOString().slice(0, 10)
-
-const dueTodayOrOverdue = tasks.filter(
-  (t) => !t.completed && t.due_date && t.due_date.slice(0, 10) <= todayStr
-)
-const pendingTodos = todos.filter((t) => !t.done)
-const habitsNotCheckedToday = habits.filter(
-  (h) => !h.last_completed_date || h.last_completed_date.slice(0, 10) !== todayStr
-)
-
 
     return (
       <div className="auth-screen">
@@ -324,20 +326,20 @@ const habitsNotCheckedToday = habits.filter(
             <span className="wordmark-en light">Tarteeb</span>
             <span className="wordmark-sub light">ordered days</span>
           </div>
- <svg className="books-illustration" viewBox="0 0 220 130" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect x="10" y="95" width="150" height="16" rx="2" fill="#B9541D" stroke="#F7F4EE" strokeWidth="1.5" strokeOpacity="0.15"/>
-  <rect x="20" y="75" width="130" height="16" rx="2" fill="#D98F4E" stroke="#F7F4EE" strokeWidth="1.5" strokeOpacity="0.15" transform="rotate(-1 85 83)"/>
-  <rect x="15" y="55" width="120" height="16" rx="2" fill="#E7C9A8" stroke="#F7F4EE" strokeWidth="1.5" strokeOpacity="0.15" transform="rotate(1.5 75 63)"/>
-  <g transform="translate(140 20) rotate(8)">
-    <rect x="0" y="0" width="16" height="70" rx="2" fill="#6B7A3F" stroke="#F7F4EE" strokeWidth="1.5" strokeOpacity="0.15"/>
-  </g>
-  <g transform="translate(160 15) rotate(-4)">
-    <rect x="0" y="0" width="16" height="76" rx="2" fill="#B9541D" stroke="#F7F4EE" strokeWidth="1.5" strokeOpacity="0.15"/>
-  </g>
-  <g transform="translate(178 25)">
-    <rect x="0" y="0" width="16" height="66" rx="2" fill="#D98F4E" stroke="#F7F4EE" strokeWidth="1.5" strokeOpacity="0.15"/>
-  </g>
-</svg>  
+          <svg className="books-illustration" viewBox="0 0 220 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="10" y="95" width="150" height="16" rx="2" fill="#B9541D" stroke="#F7F4EE" strokeWidth="1.5" strokeOpacity="0.15"/>
+            <rect x="20" y="75" width="130" height="16" rx="2" fill="#D98F4E" stroke="#F7F4EE" strokeWidth="1.5" strokeOpacity="0.15" transform="rotate(-1 85 83)"/>
+            <rect x="15" y="55" width="120" height="16" rx="2" fill="#E7C9A8" stroke="#F7F4EE" strokeWidth="1.5" strokeOpacity="0.15" transform="rotate(1.5 75 63)"/>
+            <g transform="translate(140 20) rotate(8)">
+              <rect x="0" y="0" width="16" height="70" rx="2" fill="#6B7A3F" stroke="#F7F4EE" strokeWidth="1.5" strokeOpacity="0.15"/>
+            </g>
+            <g transform="translate(160 15) rotate(-4)">
+              <rect x="0" y="0" width="16" height="76" rx="2" fill="#B9541D" stroke="#F7F4EE" strokeWidth="1.5" strokeOpacity="0.15"/>
+            </g>
+            <g transform="translate(178 25)">
+              <rect x="0" y="0" width="16" height="66" rx="2" fill="#D98F4E" stroke="#F7F4EE" strokeWidth="1.5" strokeOpacity="0.15"/>
+            </g>
+          </svg>
           <div className="auth-panel-quote">
             <p>&ldquo;Tarteeb&rdquo; — order, arrangement. A place to keep tasks,<br />habits, and study in one ledger.</p>
           </div>
@@ -402,17 +404,79 @@ const habitsNotCheckedToday = habits.filter(
               {item.label}
             </button>
           ))}
-               </nav>
-<div className="user-chip">
-  <div className="user-avatar">{userEmail ? userEmail[0].toUpperCase() : "?"}</div>
-  <div className="user-info">
-    <span className="user-email">{userEmail}</span>
-    <button className="logout-link" onClick={handleLogout}>Log out</button>
-  </div>
-</div>
+        </nav>
+        <div className="user-chip">
+          <div className="user-avatar">{userEmail ? userEmail[0].toUpperCase() : "?"}</div>
+          <div className="user-info">
+            <span className="user-email">{userEmail}</span>
+            <button className="logout-link" onClick={handleLogout}>Log out</button>
+          </div>
+        </div>
       </aside>
 
       <main className="ledger">
+        {activeTab === "today" && (
+          <section>
+            <header className="ledger-header">
+              <span className="eyebrow">Today</span>
+              <h1>What needs your attention</h1>
+            </header>
+
+            <div className="clock-card">
+              <span className="clock-time">
+                {currentTime.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+              </span>
+              <span className="clock-date">
+                {currentTime.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}
+              </span>
+            </div>
+
+            <h2 className="block-title">Due today or overdue</h2>
+            {dueTodayOrOverdue.length === 0 && <p className="empty-note">Nothing due — you're clear.</p>}
+            <ul className="entry-list">
+              {dueTodayOrOverdue.map((task) => (
+                <li key={task.id} className={`tab-${task.priority.toLowerCase()}`}>
+                  <input
+                    type="checkbox"
+                    checked={task.completed}
+                    onChange={() => handleToggleTaskDone(task)}
+                  />
+                  <span className="entry-title">{task.title}</span>
+                  <span className="entry-meta">{task.category} — {task.priority}</span>
+                  <span className="entry-due">due {task.due_date.slice(5, 10)}</span>
+                </li>
+              ))}
+            </ul>
+
+            <h2 className="block-title">Unfinished to-dos</h2>
+            {pendingTodos.length === 0 && <p className="empty-note">Nothing pending.</p>}
+            <ul className="entry-list">
+              {pendingTodos.map((todo) => (
+                <li key={todo.id} className="tab-neutral">
+                  <input
+                    type="checkbox"
+                    checked={todo.done}
+                    onChange={() => handleToggleDone(todos.findIndex((t) => t.id === todo.id))}
+                  />
+                  <span className="entry-title">{todo.text}</span>
+                </li>
+              ))}
+            </ul>
+
+            <h2 className="block-title">Habits not checked in</h2>
+            {habitsNotCheckedToday.length === 0 && <p className="empty-note">All habits checked in today.</p>}
+            <ul className="entry-list">
+              {habitsNotCheckedToday.map((habit) => (
+                <li key={habit.id} className="tab-amber">
+                  <span className="entry-title">{habit.name}</span>
+                  <span className="mono-tag streak-tag">{habit.streak} day streak</span>
+                  <button className="btn-outline" onClick={() => handleCheckIn(habit.id)}>Check in</button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
         {activeTab === "dashboard" && (
           <section>
             <header className="ledger-header">
@@ -474,14 +538,6 @@ const habitsNotCheckedToday = habits.filter(
             <header className="ledger-header">
               <span className="eyebrow">Tasks</span>
               <h1>What needs doing</h1>
-                  <div className="clock-card">
-      <span className="clock-time">
-        {currentTime.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
-      </span>
-      <span className="clock-date">
-        {currentTime.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}
-      </span>
-    </div>
             </header>
 
             <div className="entry-panel">
