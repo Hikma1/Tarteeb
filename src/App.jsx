@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 
+const API_URL = import.meta.env.VITE_API_URL
+
 function App() {
   const [activeTab, setActiveTab] = useState("today")
 
@@ -57,7 +59,7 @@ function App() {
     setAuthError("")
     const endpoint = authMode === "login" ? "/login" : "/signup"
     try {
-      const res = await fetch(`http://localhost:3000${endpoint}`, {
+      const res = await fetch(`${API_URL}${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: authEmail, password: authPassword })
@@ -87,27 +89,27 @@ function App() {
   useEffect(() => {
     if (!token) return
 
-    authFetch("http://localhost:3000/todos")
+    authFetch(`${API_URL}/todos`)
       .then((res) => res.json())
       .then((data) => setTodos(data))
       .catch((err) => console.log(err))
 
-    authFetch("http://localhost:3000/tasks")
+    authFetch(`${API_URL}/tasks`)
       .then((res) => res.json())
       .then((data) => setTasks(data))
       .catch((err) => console.log(err))
 
-    authFetch("http://localhost:3000/habits")
+    authFetch(`${API_URL}/habits`)
       .then((res) => res.json())
       .then((data) => setHabits(data))
       .catch((err) => console.log(err))
 
-    authFetch("http://localhost:3000/subjects")
+    authFetch(`${API_URL}/subjects`)
       .then((res) => res.json())
       .then((data) => setSubjects(data))
       .catch((err) => console.log(err))
 
-    authFetch("http://localhost:3000/sessions")
+    authFetch(`${API_URL}/sessions`)
       .then((res) => res.json())
       .then((data) => setSessions(data))
       .catch((err) => console.log(err))
@@ -115,7 +117,7 @@ function App() {
 
   useEffect(() => {
     if (!token) return
-    authFetch("http://localhost:3000/dashboard")
+    authFetch(`${API_URL}/dashboard`)
       .then((res) => res.json())
       .then((data) => setStats(data))
       .catch((err) => console.log(err))
@@ -132,7 +134,7 @@ function App() {
 
     if (editIndex !== null) {
       const todoToUpdate = todos[editIndex]
-      const res = await authFetch(`http://localhost:3000/todos/${todoToUpdate.id}`, {
+      const res = await authFetch(`${API_URL}/todos/${todoToUpdate.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: inputValue, done: todoToUpdate.done })
@@ -143,7 +145,7 @@ function App() {
       setTodos(updatedTodos)
       setEditIndex(null)
     } else {
-      const res = await authFetch("http://localhost:3000/todos", {
+      const res = await authFetch(`${API_URL}/todos`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: inputValue })
@@ -156,7 +158,7 @@ function App() {
 
   const handleDelete = async (index) => {
     const todoToDelete = todos[index]
-    await authFetch(`http://localhost:3000/todos/${todoToDelete.id}`, { method: "DELETE" })
+    await authFetch(`${API_URL}/todos/${todoToDelete.id}`, { method: "DELETE" })
     setTodos(todos.filter((todo, i) => i !== index))
   }
 
@@ -167,7 +169,7 @@ function App() {
 
   const handleToggleDone = async (index) => {
     const todo = todos[index]
-    const res = await authFetch(`http://localhost:3000/todos/${todo.id}`, {
+    const res = await authFetch(`${API_URL}/todos/${todo.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ text: todo.text, done: !todo.done })
@@ -181,7 +183,7 @@ function App() {
   // --- Task functions ---
   const handleAddTask = async () => {
     if (taskTitle.trim() === "") return
-    const res = await authFetch("http://localhost:3000/tasks", {
+    const res = await authFetch(`${API_URL}/tasks`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -198,12 +200,12 @@ function App() {
   }
 
   const handleDeleteTask = async (id) => {
-    await authFetch(`http://localhost:3000/tasks/${id}`, { method: "DELETE" })
+    await authFetch(`${API_URL}/tasks/${id}`, { method: "DELETE" })
     setTasks(tasks.filter((task) => task.id !== id))
   }
 
   const handleToggleTaskDone = async (task) => {
-    const res = await authFetch(`http://localhost:3000/tasks/${task.id}`, {
+    const res = await authFetch(`${API_URL}/tasks/${task.id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -221,7 +223,7 @@ function App() {
   // --- Habit functions ---
   const handleAddHabit = async () => {
     if (habitName.trim() === "") return
-    const res = await authFetch("http://localhost:3000/habits", {
+    const res = await authFetch(`${API_URL}/habits`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: habitName })
@@ -232,7 +234,7 @@ function App() {
   }
 
   const handleCheckIn = async (id) => {
-    const res = await authFetch(`http://localhost:3000/habits/${id}/checkin`, {
+    const res = await authFetch(`${API_URL}/habits/${id}/checkin`, {
       method: "POST"
     })
     if (!res.ok) {
@@ -245,14 +247,14 @@ function App() {
   }
 
   const handleDeleteHabit = async (id) => {
-    await authFetch(`http://localhost:3000/habits/${id}`, { method: "DELETE" })
+    await authFetch(`${API_URL}/habits/${id}`, { method: "DELETE" })
     setHabits(habits.filter((h) => h.id !== id))
   }
 
   // --- Study functions ---
   const handleAddSubject = async () => {
     if (subjectName.trim() === "") return
-    const res = await authFetch("http://localhost:3000/subjects", {
+    const res = await authFetch(`${API_URL}/subjects`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name: subjectName })
@@ -263,7 +265,7 @@ function App() {
   }
 
   const handleUpdateProgress = async (id, progress) => {
-    const res = await authFetch(`http://localhost:3000/subjects/${id}`, {
+    const res = await authFetch(`${API_URL}/subjects/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ progress })
@@ -274,7 +276,7 @@ function App() {
 
   const handleAddSession = async () => {
     if (!sessionSubjectId || !sessionDuration) return
-    const res = await authFetch("http://localhost:3000/sessions", {
+    const res = await authFetch(`${API_URL}/sessions`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
