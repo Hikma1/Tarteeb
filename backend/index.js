@@ -11,11 +11,10 @@ app.use(cors());
 app.use(express.json());
 
 const pool = new Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "mern_practice",
-  password: "postgres",
-  port: 5432,
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.DATABASE_URL && process.env.DATABASE_URL.includes("render.com")
+    ? { rejectUnauthorized: false }
+    : false,
 });
 
 // ---------- AUTH MIDDLEWARE ----------
@@ -47,6 +46,7 @@ app.post("/signup", async (req, res) => {
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
     res.status(201).json({ user, token });
   } catch (error) {
+    console.error("SIGNUP ERROR:", error);
     res.status(400).json({ error: error.message });
   }
 });
@@ -384,9 +384,9 @@ app.delete("/subjects/:id", authenticateToken, async (req, res) => {
 
 app.post("/sessions", authenticateToken, async (req, res) => {
   try {
-    const { subject_id, duration_minutes, notes, } = req.body;
+    const { subject_id, duration_minutes, notes } = req.body;
     const result = await pool.query(
-      "INSERT INTO study_sessions (subject_id, duration_minutes, notes,user_id) VALUES ($1, $2, $3,$4) RETURNING *",
+      "INSERT INTO study_sessions (subject_id, duration_minutes, notes, user_id) VALUES ($1, $2, $3, $4) RETURNING *",
       [subject_id, duration_minutes, notes || null, req.userId]
     );
     res.status(201).json(result.rows[0]);
