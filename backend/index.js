@@ -415,5 +415,16 @@ app.delete("/sessions/:id", authenticateToken, async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+app.get("/announcements", authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM announcements WHERE user_id = $1 ORDER BY created_at DESC",
+      [req.userId]
+    );
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
 
 app.listen(3000, () => console.log("Server running on port 3000"));
