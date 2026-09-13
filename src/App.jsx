@@ -40,6 +40,9 @@ function App() {
   const [sessionDuration, setSessionDuration] = useState("")
   const [sessionNotes, setSessionNotes] = useState("")
 
+  // --- Announcements ---
+  const [announcements, setAnnouncements] = useState([])
+
   // --- Dashboard ---
   const [stats, setStats] = useState(null)
   const [currentTime, setCurrentTime] = useState(new Date())
@@ -112,6 +115,11 @@ function App() {
     authFetch(`${API_URL}/sessions`)
       .then((res) => res.json())
       .then((data) => setSessions(data))
+      .catch((err) => console.log(err))
+
+    authFetch(`${API_URL}/announcements`)
+      .then((res) => res.json())
+      .then((data) => setAnnouncements(data))
       .catch((err) => console.log(err))
   }, [token])
 
@@ -299,6 +307,7 @@ function App() {
     { id: "todos", label: "To-Do" },
     { id: "habits", label: "Habits" },
     { id: "study", label: "Study" },
+    { id: "announcements", label: "Announcements" },
   ]
 
   const taskProgress = stats && stats.totalTasks > 0
@@ -722,6 +731,24 @@ function App() {
                   <span className="entry-title">{session.subject_name}</span>
                   <span className="mono-tag">{session.duration_minutes} min</span>
                   {session.notes && <span className="entry-meta">{session.notes}</span>}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {activeTab === "announcements" && (
+          <section>
+            <header className="ledger-header">
+              <span className="eyebrow">Class updates</span>
+              <h1>Announcements</h1>
+            </header>
+            {announcements.length === 0 && <p className="empty-note">Nothing detected yet.</p>}
+            <ul className="entry-list">
+              {announcements.map((a) => (
+                <li key={a.id} className="tab-amber">
+                  <span className="entry-title">{a.text}</span>
+                  <span className="mono-tag">{a.detected_keyword}</span>
                 </li>
               ))}
             </ul>
