@@ -5,12 +5,15 @@ const { Pool } = require("pg");
 const bot = new Bot(process.env.TELEGRAM_BOT_TOKEN);
 
 const pool = new Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "mern_practice",
-  password: "postgres",
-  port: 5432,
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.DATABASE_URL && process.env.DATABASE_URL.includes("render.com")
+    ? { rejectUnauthorized: false }
+    : false,
 });
+
+// REPLACE THIS with your actual id number from:
+// SELECT id, email FROM users;
+const MY_USER_ID = 1;
 
 const keywords = ["exam", "assignment", "deadline", "quiz", "submission", "due", "project"];
 
@@ -32,8 +35,8 @@ bot.on("message", async (ctx) => {
   if (matchedKeyword) {
     try {
       await pool.query(
-        "INSERT INTO announcements (text, detected_keyword) VALUES ($1, $2)",
-        [text, matchedKeyword]
+        "INSERT INTO announcements (text, detected_keyword, user_id) VALUES ($1, $2, $3)",
+        [text, matchedKeyword, MY_USER_ID]
       );
       console.log("Saved to database!");
     } catch (error) {
